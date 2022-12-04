@@ -10,7 +10,12 @@ import { TextWithCodeHighlight } from "./TextWithCodeHighlight";
 import { Answer, Question } from "./types";
 
 function App() {
-  const [currentQuestionID, SetCurrentQuestionID] = useState(0);
+  const [questionListHeight, setQuestionListHeight] = useState(0);
+  const elementRef = useRef<any>(null); //TODO type
+  useEffect(() => {
+    setQuestionListHeight(elementRef.current.offsetHeight || 0);
+  }, []); //empty dependency array so it only runs once at render
+  const [currentQuestionID, setCurrentQuestionID] = useState(0);
   const [questionListVisible, setQuestionListVisible] = useState(false);
   const [questions, setQuestions] = useState<Array<Question>>(
     questionsJSON.map((question) => ({ ...question, answer: null }))
@@ -33,27 +38,20 @@ function App() {
     );
   };
 
-  const [height, setHeight] = useState(0);
-  const elementRef = useRef<any>(null); //TODO
-  
-  useEffect(() => {
-    setHeight(elementRef.current.offsetHeight || 0);
-  }, []); //empty dependency array so it only runs once at render
-  console.log('height: ', height);
-
   return (
     <>
       <div
         ref={elementRef}
         style={{
-          marginTop: questionListVisible ? "0px" : `-${height+218}px`,
+          marginTop: questionListVisible
+            ? "0px"
+            : `-${questionListHeight + 32 + 16}px`, //TODO refactor (32 = 2rem)
           transition: "ease 0.6s",
-          marginBottom: "16px"
-          // backgroundColor: "black",
+          marginBottom: "16px",
         }}
       >
         <QuestionList
-          setCurrentQuestion={SetCurrentQuestionID}
+          setCurrentQuestion={setCurrentQuestionID}
           answers={answers}
         />
       </div>
@@ -66,7 +64,7 @@ function App() {
         </button>
       ) : (
         <button
-          style={{ borderRadius: "0 0 8px 8px", marginBottom: "48px", position: "sticky", top: "0" }}
+          style={{ borderRadius: "0 0 8px 8px", marginBottom: "48px" }}
           onClick={() => setQuestionListVisible(true)}
         >
           Show question list
@@ -108,7 +106,7 @@ function App() {
               <button
                 style={{ marginRight: "8px", fontSize: ".7em" }}
                 onClick={() => {
-                  SetCurrentQuestionID(
+                  setCurrentQuestionID(
                     (currentQuestionID) => currentQuestionID - 1
                   );
                 }}
@@ -119,7 +117,7 @@ function App() {
             {currentQuestionID < questions.length - 1 && (
               <button
                 onClick={() => {
-                  SetCurrentQuestionID(
+                  setCurrentQuestionID(
                     (currentQuestionID) => currentQuestionID + 1
                   );
                 }}
