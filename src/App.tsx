@@ -1,36 +1,77 @@
-import { useEffect, useState } from "react";
-import "./App.css";
+import { useEffect, useRef, useState } from "react";
+import Highlight from "react-highlight";
 
 import questionsJSON from "../public/questions.json";
-import Highlight from "react-highlight";
+
+import "./App.css";
 import { QuestionList } from "./QuestionList";
 import { Options } from "./Options";
 import { TextWithCodeHighlight } from "./TextWithCodeHighlight";
-import { Answer } from "./types";
-
-
+import { Answer, Question } from "./types";
 
 function App() {
-  const [count, setCount] = useState(0);
-  const questions = questionsJSON.map(question => ({...question, answer:null}))
-  const question = questions[count];
-  const initialAnswers: Array<Answer> = questions.map(
-    ({ id, correctAnswer }) => {
-      return {
-        questionId: id,
-        correctAnswer,
-        answer: null,
-      };
-    }
+  const [currentQuestionID, SetCurrentQuestionID] = useState(0);
+  const [questionListVisible, setQuestionListVisible] = useState(false);
+  const [questions, setQuestions] = useState<Array<Question>>(
+    questionsJSON.map((question) => ({ ...question, answer: null }))
   );
-  const [answers, setAnswers] = useState(initialAnswers);
-  const answered = !!answers[parseInt(question.id) - 1].answer;
+  const question = questions[currentQuestionID];
+  const answered = !!questions[parseInt(question.id) - 1].answer;
+  const answers: Array<Answer> = questions.map(
+    ({ id, correctAnswer, answer }) => ({
+      questionId: id,
+      correctAnswer,
+      answer,
+    })
+  );
+
+  const updateAnswer = (questionId: string, answer: string | null) => {
+    setQuestions(
+      questions.map((question) =>
+        question.id === questionId ? { ...question, answer } : question
+      )
+    );
+  };
+
+  const [height, setHeight] = useState(0);
+  const elementRef = useRef<any>(null); //TODO
+  
+  useEffect(() => {
+    setHeight(elementRef.current.offsetHeight || 0);
+  }, []); //empty dependency array so it only runs once at render
+  console.log('height: ', height);
 
   return (
     <>
-      <div style={{ marginBottom: "48px" }}>
-        <QuestionList setCurrentQuestion={setCount} answers={answers} />
+      <div
+        ref={elementRef}
+        style={{
+          marginTop: questionListVisible ? "0px" : `-${height+218}px`,
+          transition: "ease 0.6s",
+          marginBottom: "16px"
+          // backgroundColor: "black",
+        }}
+      >
+        <QuestionList
+          setCurrentQuestion={SetCurrentQuestionID}
+          answers={answers}
+        />
       </div>
+      {questionListVisible ? (
+        <button
+          style={{ marginBottom: "48px" }}
+          onClick={() => setQuestionListVisible(false)}
+        >
+          Hide question list
+        </button>
+      ) : (
+        <button
+          style={{ borderRadius: "0 0 8px 8px", marginBottom: "48px", position: "sticky", top: "0" }}
+          onClick={() => setQuestionListVisible(true)}
+        >
+          Show question list
+        </button>
+      )}
       <div className="App">
         <h2>{`${question.id}. ${question.question}`}</h2>
         <div
@@ -41,7 +82,7 @@ function App() {
           }}
         >
           {!!question.code && (
-            <Highlight key={count} className="typescript">
+            <Highlight key={currentQuestionID} className="typescript">
               <div style={{ textAlign: "left" }}>{question.code}</div>
             </Highlight>
           )}
@@ -51,7 +92,7 @@ function App() {
           answers={answers}
           questionAnswered={answered}
           question={question}
-          setAnswers={setAnswers}
+          updateAnswer={updateAnswer}
         />
         {answered && (
           <>
@@ -63,20 +104,24 @@ function App() {
             </article>
             <br />
 
-            {count > 0 && (
+            {currentQuestionID > 0 && (
               <button
                 style={{ marginRight: "8px", fontSize: ".7em" }}
                 onClick={() => {
-                  setCount((count) => count - 1);
+                  SetCurrentQuestionID(
+                    (currentQuestionID) => currentQuestionID - 1
+                  );
                 }}
               >
                 &#8592; Previous
               </button>
             )}
-            {count < questions.length - 1 && (
+            {currentQuestionID < questions.length - 1 && (
               <button
                 onClick={() => {
-                  setCount((count) => count + 1);
+                  SetCurrentQuestionID(
+                    (currentQuestionID) => currentQuestionID + 1
+                  );
                 }}
               >
                 Next question &#8594;

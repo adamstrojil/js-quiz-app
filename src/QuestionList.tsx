@@ -14,6 +14,7 @@ export function QuestionList({ answers, setCurrentQuestion }: Props) {
         display: "grid",
         gridTemplateColumns: "repeat(auto-fill, 3em)",
         gridGap: "2px",
+        justifyContent: "center",
       }}
     >
       {answers.map(({ questionId, correctAnswer, answer }) => {

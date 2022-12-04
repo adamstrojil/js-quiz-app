@@ -6,13 +6,13 @@ type Props = {
   question: Question;
   answers: Array<Answer>;
   questionAnswered: boolean;
-  setAnswers: (answers: Array<Answer>) => void;
+  updateAnswer: (questionId: string, answer: string | null) => void;
 };
 
 //Disgusting, refactor
 export function Options({
   question,
-  setAnswers,
+  updateAnswer,
   answers,
   questionAnswered,
 }: Props) {
@@ -32,7 +32,7 @@ export function Options({
 
         const rightAnswer = question.correctAnswer === id;
         const questionAnsweredIncorrectly =
-          answers[parseInt(question.id) - 1].answer === id;
+          answers[parseInt(question.id)-1].answer === id;
 
         const optionVariant: OptionVariant = questionAnswered
           ? rightAnswer
@@ -45,7 +45,7 @@ export function Options({
         {
           return (
             <Option
-              updateAnswers={setAnswers}
+              updateAnswer={updateAnswer}
               variant={optionVariant}
               disabled={questionAnswered}
               id={id}

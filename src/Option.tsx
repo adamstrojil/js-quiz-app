@@ -6,7 +6,7 @@ type Props = {
   id: string;
   text: string;
   disabled: boolean;
-  updateAnswers: (answers: Array<Answer>) => void;
+  updateAnswer: (questionId: string, answer: string | null) => void;
   answers: Array<Answer>;
   question: Question;
   answered: boolean;
@@ -18,11 +18,11 @@ export function Option({
   question,
   disabled,
   variant,
-  answers,
-  updateAnswers,
+  updateAnswer,
   answered,
   text,
 }: Props) {
+  
   const variantToColorMap = {
     Correct: "#43ac9a",
     Incorrect: "#c1554c",
@@ -33,16 +33,7 @@ export function Option({
     <button
       disabled={disabled}
       onClick={() => {
-        updateAnswers(
-          answers.map((answer: Answer) => {
-            return answer.questionId === question.id
-              ? {
-                  ...answer,
-                  answer: id,
-                }
-              : answer;
-          })
-        );
+        updateAnswer(question.id, id);
       }}
       style={{
         textAlign: "initial",

@@ -8,6 +8,7 @@ export type Question = {
   }>;
   description: string;
   correctAnswer: string;
+  answer: string | null
 };
 
 export type Answer = {
