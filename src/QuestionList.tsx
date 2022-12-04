@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { Answer } from "./App";
+import { Answer } from "./types";
 import "./App.css";
 
 type Props = {

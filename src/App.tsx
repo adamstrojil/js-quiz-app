@@ -1,31 +1,18 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 
-import questions from "../public/questions.json";
+import questionsJSON from "../public/questions.json";
 import Highlight from "react-highlight";
 import { QuestionList } from "./QuestionList";
 import { Options } from "./Options";
 import { TextWithCodeHighlight } from "./TextWithCodeHighlight";
+import { Answer } from "./types";
 
-type Question = {
-  id: string;
-  question: string;
-  code: string;
-  options: {
-    id: string;
-    option: string;
-  };
-  description: string;
-};
 
-export type Answer = {
-  questionId: string;
-  correctAnswer: string;
-  answer: string | null;
-};
 
 function App() {
   const [count, setCount] = useState(0);
+  const questions = questionsJSON.map(question => ({...question, answer:null}))
   const question = questions[count];
   const initialAnswers: Array<Answer> = questions.map(
     ({ id, correctAnswer }) => {
@@ -62,7 +49,7 @@ function App() {
         <br />
         <Options
           answers={answers}
-          answered={answered}
+          questionAnswered={answered}
           question={question}
           setAnswers={setAnswers}
         />
