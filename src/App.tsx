@@ -1,8 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 
 import questions from "../public/questions.json";
 import Highlight from "react-highlight";
+import { QuestionList } from "./QuestionList";
+import { Options } from "./Options";
+import { TextWithCodeHighlight } from "./TextWithCodeHighlight";
 
 type Question = {
   id: string;
@@ -15,109 +18,87 @@ type Question = {
   description: string;
 };
 
+export type Answer = {
+  questionId: string;
+  correctAnswer: string;
+  answer: string | null;
+};
+
 function App() {
-  const [count, setCount] = useState(0); 
-  const [answerVisible, setAnswerVisible] = useState(false);
+  const [count, setCount] = useState(0);
   const question = questions[count];
+  const initialAnswers: Array<Answer> = questions.map(
+    ({ id, correctAnswer }) => {
+      return {
+        questionId: id,
+        correctAnswer,
+        answer: null,
+      };
+    }
+  );
+  const [answers, setAnswers] = useState(initialAnswers);
+  const answered = !!answers[parseInt(question.id) - 1].answer;
 
   return (
-    <div className="App">
-      <h2>{`${question.id}. ${question.question}`}</h2>
-      <br />
-      <div
-        style={{
-          marginLeft: "auto",
-          marginRight: "auto",
-          width: "60vw",
-        }}
-      >
-        {!!question.code && (
-          <Highlight key={count} className="javascript">
-            <div style={{ textAlign: "left" }}>{question.code}</div>
-          </Highlight>
+    <>
+      <div style={{ marginBottom: "48px" }}>
+        <QuestionList setCurrentQuestion={setCount} answers={answers} />
+      </div>
+      <div className="App">
+        <h2>{`${question.id}. ${question.question}`}</h2>
+        <div
+          style={{
+            marginLeft: "auto",
+            marginRight: "auto",
+            width: "60vw",
+          }}
+        >
+          {!!question.code && (
+            <Highlight key={count} className="typescript">
+              <div style={{ textAlign: "left" }}>{question.code}</div>
+            </Highlight>
+          )}
+        </div>
+        <br />
+        <Options
+          answers={answers}
+          answered={answered}
+          question={question}
+          setAnswers={setAnswers}
+        />
+        {answered && (
+          <>
+            <h3>Explanation</h3>
+            <article
+              style={{ textAlign: "justify", width: "80vw", margin: "auto" }}
+            >
+              <TextWithCodeHighlight text={question.description} />
+            </article>
+            <br />
+
+            {count > 0 && (
+              <button
+                style={{ marginRight: "8px", fontSize: ".7em" }}
+                onClick={() => {
+                  setCount((count) => count - 1);
+                }}
+              >
+                &#8592; Previous
+              </button>
+            )}
+            {count < questions.length - 1 && (
+              <button
+                onClick={() => {
+                  setCount((count) => count + 1);
+                }}
+              >
+                Next question &#8594;
+              </button>
+            )}
+          </>
         )}
       </div>
-      <br />
-      <div
-        style={{
-          // marginLeft: "20vw",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "flex-start",
-          marginLeft: "auto",
-          marginRight: "auto",
-          width: "60vw",
-        }}
-      >
-        {question.options.map((option, index) => {
-          const optionText = `${option.id}:  ${option.option}`;
-          {
-            return (
-              <div style={{ textAlign: "initial",    padding: "3px 30px 3px 10px" }}>
-                {optionText.split("`").map((text: string, index) => {
-                  if (index % 2 === 0) {
-                    return text;
-                  } else {
-                    return (
-                      <span className="inline-code">
-                        <Highlight
-                          key={count + "" + index}
-                          className="javascript"
-                        >
-                          {text}
-                        </Highlight>
-                      </span>
-                    );
-                  }
-                })}
-                <br />
-              </div>
-            );
-          }
-        })}
-      </div>
-      <br />
-      {!answerVisible && (
-        <button
-          style={{ marginRight: "16px" }}
-          onClick={() => setAnswerVisible(true)}
-        >
-          Show answer
-        </button>
-      )}
-      {answerVisible && (
-        <>
-          <h3>{`Correct answer: ${question.correctAnswer}`} </h3><br/>
-          <h3>Explanation</h3>
-          <article
-            style={{ textAlign: "justify", width: "80vw", margin: "auto" }}
-          >
-            {question.description}
-          </article>
-          <br />
-
-          {count > 0 && (
-            <button
-              style={{ marginRight: "8px", fontSize: ".7em" }}
-              onClick={() => {
-                setCount((count) => count - 1);
-                setAnswerVisible(false);
-              }}
-            >
-              &#8592; Previous
-            </button>
-          )}
-          <button
-            onClick={() => {
-              setCount((count) => count + 1);
-              setAnswerVisible(false);
-            }}
-          >
-            Next question &#8594;
-          </button>
-        </>
-      )}
-    </div>
+    </>
   );
 }
 
