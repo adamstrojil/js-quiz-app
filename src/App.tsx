@@ -11,10 +11,13 @@ import { Answer, Question } from "./types";
 
 function App() {
   const [questionListHeight, setQuestionListHeight] = useState(0);
-  const elementRef = useRef<any>(null); //TODO type
-  useEffect(() => {
-    setQuestionListHeight(elementRef.current.offsetHeight || 0);
-  }, []); //empty dependency array so it only runs once at render
+  const questionListElementRef = useRef<any>(null); //TODO type
+  const nextButtonRef = useRef<any>(null); //TODO type
+
+  useEffect(function getQuestionListElementHeight() {
+    setQuestionListHeight(questionListElementRef.current.offsetHeight || 0);
+  }, []);
+
   const [currentQuestionID, setCurrentQuestionID] = useState(0);
   const [questionListVisible, setQuestionListVisible] = useState(false);
   const [questions, setQuestions] = useState<Array<Question>>(
@@ -30,6 +33,13 @@ function App() {
     })
   );
 
+  useEffect(
+    function focusNextButtonWhenQuestionAnswered() {
+      answered && nextButtonRef?.current?.focus();
+    },
+    [answered]
+  );
+
   const updateAnswer = (questionId: string, answer: string | null) => {
     setQuestions(
       questions.map((question) =>
@@ -41,7 +51,7 @@ function App() {
   return (
     <>
       <div
-        ref={elementRef}
+        ref={questionListElementRef}
         style={{
           marginTop: questionListVisible
             ? "0px"
@@ -114,8 +124,9 @@ function App() {
                 &#8592; Previous
               </button>
             )}
-            {currentQuestionID < questions.length - 1 && (
+            {currentQuestionID < questions.length - 1 && ( //TODO refactor
               <button
+                ref={nextButtonRef}
                 onClick={() => {
                   setCurrentQuestionID(
                     (currentQuestionID) => currentQuestionID + 1
@@ -127,6 +138,13 @@ function App() {
             )}
           </>
         )}
+        <footer className="read-the-docs">
+          Based on Lydia Hallie's{" "}
+          <a href="https://github.com/lydiahallie/javascript-questions">
+            github repo
+          </a>
+          .
+        </footer>
       </div>
     </>
   );

@@ -28,7 +28,7 @@ export function Options({
       }}
     >
       {question.options.map(({ id, option }: OptionType) => {
-        const optionText = `${id}:  ${option}`;
+        const optionText = `${id}: &nbsp; ${option}`;
 
         const rightAnswer = question.correctAnswer === id;
         const questionAnsweredIncorrectly =
