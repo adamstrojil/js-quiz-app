@@ -5,11 +5,17 @@ type Props = {
 };
 
 export function TextWithCodeHighlight({ text }: Props) {
+  //TODO support _x_ and **x**
   return (
     <>
-      {text.split("`").map((text: string, index) => {
+      {text.split("`").map((text, index) => {
         if (index % 2 === 0) {
-          return <span dangerouslySetInnerHTML={{__html: text}}></span>
+          return (
+            <div
+              style={{ display: "inline" }}
+              dangerouslySetInnerHTML={{ __html: text }}
+            />
+          );
         } else {
           return (
             <span className="inline-code">

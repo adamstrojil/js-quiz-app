@@ -8,3 +8,10 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
     <App />
   </React.StrictMode>
 )
+
+
+
+//TODO: 
+// - 90. question, javascript block
+// - _italic_ and **text** in text
+// - remove question list from (at least a11y) dom when not visible 

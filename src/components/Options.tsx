@@ -1,5 +1,4 @@
-import { Answer, OptionVariant, Option as OptionType, Question } from "./types";
-import "./App.css";
+import { Answer, OptionVariant, Option as OptionType, Question } from "../types";
 import { Option } from "./Option";
 
 type Props = {

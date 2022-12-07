@@ -16,6 +16,15 @@
   -webkit-text-size-adjust: 100%;
 }
 
+html::-webkit-scrollbar {
+  display: none;
+}
+
+article img {
+  display: block;
+  margin: 1rem auto;
+}
+
 a {
   font-weight: 500;
   color: #646cff;
