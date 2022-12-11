@@ -45,6 +45,9 @@ h1 {
   font-size: 1.6em;
   line-height: 1.1;
 }
+h1:focus {
+outline: none;
+}
 
 button {
   border-radius: 8px;

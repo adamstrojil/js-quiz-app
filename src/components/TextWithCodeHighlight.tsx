@@ -12,14 +12,12 @@ export function TextWithCodeHighlight({ text }: Props) {
         const isCode = index % 2 === 1;
 
         return isCode ? (
-          <span className="inline-code">
-            <Highlight key={index} className="javascript">
-              {text}
-            </Highlight>
+          <span key={index} className="inline-code">
+            <Highlight className="javascript">{text}</Highlight>
           </span>
         ) : (
-          <div
-            style={{ display: "inline" }}
+          <span
+            key={index}
             dangerouslySetInnerHTML={{ __html: text }}
           />
         );

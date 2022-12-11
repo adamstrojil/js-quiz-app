@@ -42,6 +42,7 @@ export function Options({ question, updateAnswer }: Props) {
         {
           return (
             <Option
+              key={id}
               updateAnswer={updateAnswer}
               variant={optionVariant}
               disabled={questionAnswered}

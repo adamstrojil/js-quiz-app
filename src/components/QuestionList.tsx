@@ -1,32 +1,47 @@
 import { forwardRef, useEffect, useState } from "react";
+
 import { Answer } from "../types";
+
 import { Button } from "./Button";
 import { QuestionListButton } from "./QuestionListButton";
 
 type Props = {
+  currentQuestionIndex: number;
   answers: Array<Answer>;
   chooseQuestion: (questionNumber: number) => void;
   setVisible: (isVisible: boolean) => void;
-  visible: boolean;
+  isVisible: boolean;
 };
 
 export const QuestionList = forwardRef(function QuestionList(
-  { answers, visible, chooseQuestion, setVisible }: Props,
+  {
+    answers,
+    isVisible,
+    chooseQuestion,
+    setVisible,
+    currentQuestionIndex,
+  }: Props,
   ref: any
 ) {
   const [questionListHeight, setQuestionListHeight] = useState(0);
 
-  useEffect(function getQuestionListElementHeight() {
-    setQuestionListHeight(ref?.current?.offsetHeight || 0);
+  useEffect(function updateQuestionListElementHeight() {
+    const handleResize = () => {
+      setQuestionListHeight(ref?.current?.offsetHeight || 0);
+    };
+    window.addEventListener("resize", handleResize);
+    handleResize();
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   return (
     <>
       <div
         ref={ref}
+        aria-hidden={isVisible}
         style={{
-          marginTop: visible ? "2rem" : `-${questionListHeight + 16}px`, //16 (1rem) because of the marginBottom
-          transform: `scale(${visible ? "1" : "0.9"})`,
+          marginTop: isVisible ? "2rem" : `-${questionListHeight + 16}px`, //16 (1rem) because of the marginBottom
+          transform: `scale(${isVisible ? "1" : "0.95"})`,
           transition: "ease 0.5s", //TODO update with the keyframes animation
           marginBottom: "1rem",
         }}
@@ -51,11 +66,14 @@ export const QuestionList = forwardRef(function QuestionList(
 
             return (
               <QuestionListButton
+                key={questionId}
                 onClick={() => {
                   chooseQuestion(questionIndex);
                   setVisible(false);
                 }}
+                hasFocus={isVisible && currentQuestionIndex === questionIndex}
                 variant={variant}
+                tabIndex={isVisible ? 0 : -1}
               >
                 {questionId}
               </QuestionListButton>
@@ -66,11 +84,11 @@ export const QuestionList = forwardRef(function QuestionList(
       <Button
         style={{
           marginBottom: "48px",
-          ...(!visible && { borderRadius: "0 0 8px 8px" }),
+          ...(!isVisible && { borderRadius: "0 0 8px 8px" }),
         }}
-        onClick={() => setVisible(visible ? false : true)}
+        onClick={() => setVisible(!isVisible)}
       >
-        {`${visible ? "Hide" : "Show"} question list`}
+        {`${isVisible ? "Hide" : "Show"} question list`}
       </Button>
     </>
   );

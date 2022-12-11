@@ -3,10 +3,10 @@
 
 import { animateScroll } from "./animateScroll";
 
-const logError = () =>
-  console.error(
-    `Invalid element, are you sure you've provided element id or react ref?`
-  );
+// const logError = () =>
+//   console.error(
+//     `Invalid element, are you sure you've provided element id or react ref?`
+//   );
 
 const getElementPosition = (element) => element.offsetTop;
 
@@ -28,14 +28,13 @@ export const scrollTo = ({
 
   if (!element) {
     // log error if the reference passed is invalid
-    logError();
+    // logError();
     return;
   }
 
   const target =
-  getElementPosition(element) - window.innerHeight + element.offsetHeight + 100; // + 32;
+  getElementPosition(element) - window.innerHeight + element.offsetHeight + 100; 
   
-  console.log('target: ', target);
   animateScroll({
     targetPosition: target,
     initialPosition,

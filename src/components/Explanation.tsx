@@ -17,7 +17,7 @@ export function Explanation({ text }: Props) {
       >
         📚 Explanation
       </h2>
-      <p
+      <div
         style={{
           backgroundColor: " hsl(223deg 11% 16%)",
           padding: "1rem",
@@ -28,7 +28,7 @@ export function Explanation({ text }: Props) {
         }}
       >
         <TextWithCodeHighlight text={text} />
-      </p>
+      </div>
     </article>
   );
 }

@@ -27,6 +27,7 @@ export function App() {
   );
   const questionListRef = useRef<Optional<HTMLDivElement>>(null);
   const nextButtonRef = useRef<Optional<HTMLButtonElement>>(null);
+  const questionTitleRef = useRef<Optional<HTMLHeadingElement>>(null);
 
   const question = questions[currentQuestionIndex];
   const questionTitle = `${question.id}. ${question.question}`;
@@ -41,13 +42,19 @@ export function App() {
 
   useEffect(
     function focusNextButtoOnQuestionAnswered() {
-      //FIXME: question 30 scroll not working (smth to do with imgs)
       if (answered) {
         scrollTo({ ref: nextButtonRef, id: null, duration: 1000 }); //https://www.ackee.agency/blog/scroll-to-element-with-react-and-vanilla-javascript
         nextButtonRef?.current?.focus();
       }
     },
     [answered]
+  );
+
+  useEffect(
+    function focusTitleOnQuestionChange() {
+      questionTitleRef?.current?.focus();
+    },
+    [currentQuestionIndex]
   );
 
   const hasNextQuestion = currentQuestionIndex < questions.length - 1;
@@ -83,20 +90,24 @@ export function App() {
     >
       <div className="content">
         <QuestionList
+          currentQuestionIndex={currentQuestionIndex}
           ref={questionListRef}
           answers={answers}
           chooseQuestion={setCurrentQuestionIndex}
-          visible={questionListVisible}
+          isVisible={questionListVisible}
           setVisible={setQuestionListVisible}
         />
         <main
           className="App"
           style={{
             opacity: questionListVisible || !questionVisible ? "0" : "1",
+            visibility: questionListVisible ? "hidden" : "visible",
             transition: "ease 0.5s",
           }}
         >
-          <h1>{questionTitle}</h1>
+          <h1 tabIndex={-1} ref={questionTitleRef}>
+            {questionTitle}
+          </h1>
           <div
             style={{
               margin: "0 auto 2rem auto",
