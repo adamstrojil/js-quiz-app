@@ -1,20 +1,19 @@
-import { Answer, OptionVariant, Option as OptionType, Question } from "../types";
+import {
+  OptionVariant,
+  Option as OptionType,
+  Question,
+  Optional,
+} from "../types";
 import { Option } from "./Option";
 
 type Props = {
   question: Question;
-  answers: Array<Answer>;
-  questionAnswered: boolean;
-  updateAnswer: (questionId: string, answer: string | null) => void;
+  updateAnswer: (questionId: string, answer: Optional<string>) => void;
 };
 
-//Disgusting, refactor
-export function Options({
-  question,
-  updateAnswer,
-  answers,
-  questionAnswered,
-}: Props) {
+export function Options({ question, updateAnswer }: Props) {
+  const questionAnswered = !!question.answer;
+
   return (
     <div
       style={{
@@ -30,8 +29,7 @@ export function Options({
         const optionText = `${id}: &nbsp; ${option}`;
 
         const rightAnswer = question.correctAnswer === id;
-        const questionAnsweredIncorrectly =
-          answers[parseInt(question.id)-1].answer === id;
+        const questionAnsweredIncorrectly = question.answer === id;
 
         const optionVariant: OptionVariant = questionAnswered
           ? rightAnswer
@@ -48,7 +46,6 @@ export function Options({
               variant={optionVariant}
               disabled={questionAnswered}
               id={id}
-              answers={answers}
               question={question}
               text={optionText}
               answered={questionAnswered}

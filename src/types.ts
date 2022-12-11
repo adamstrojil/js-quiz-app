@@ -1,3 +1,5 @@
+export type Optional<T> = T | null;
+
 export type Question = {
   id: string;
   question: string;
@@ -8,13 +10,13 @@ export type Question = {
   }>;
   description: string;
   correctAnswer: string;
-  answer: string | null
+  answer: Optional<string>;
 };
 
 export type Answer = {
   questionId: string;
   correctAnswer: string;
-  answer: string | null;
+  answer: Optional<string>;
 };
 
 export type Option = {

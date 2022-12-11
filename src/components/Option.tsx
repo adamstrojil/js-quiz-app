@@ -1,12 +1,11 @@
-import { Answer, OptionVariant, Question } from "../types";
+import { Answer, Optional, OptionVariant, Question } from "../types";
 import { TextWithCodeHighlight } from "./TextWithCodeHighlight";
 
 type Props = {
   id: string;
   text: string;
   disabled: boolean;
-  updateAnswer: (questionId: string, answer: string | null) => void;
-  answers: Array<Answer>;
+  updateAnswer: (questionId: string, answer: Optional<string>) => void;
   question: Question;
   answered: boolean;
   variant: OptionVariant;

@@ -7,27 +7,30 @@ import { scrollTo } from "./utils";
 import "./App.css";
 import { QuestionList } from "./components/QuestionList";
 import { Options } from "./components/Options";
-import { Answer, Question } from "./types";
+import { Answer, Optional, Question } from "./types";
 import { Button } from "./components/Button";
 import { Explanation } from "./components/Explanation";
+import { Footer } from "./components/Footer";
 
-function App() {
-  const [questionListHeight, setQuestionListHeight] = useState(0);
-  const questionListElementRef = useRef<HTMLDivElement | null>(null);
-  const nextButtonRef = useRef<HTMLButtonElement | null>(null);
+const footerLink = (
+  <a target="_blank" href="https://github.com/lydiahallie/javascript-questions">
+    github repo
+  </a>
+);
 
-  useEffect(function getQuestionListElementHeight() {
-    setQuestionListHeight(questionListElementRef?.current?.offsetHeight || 0);
-  }, []);
-
+export function App() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [questionListVisible, setQuestionListVisible] = useState(false);
-  const [visible, setVisible] = useState(true);
+  const [questionVisible, setQuestionVisible] = useState(true);
   const [questions, setQuestions] = useState<Array<Question>>(
     questionsJSON.map((question) => ({ ...question, answer: null }))
   );
+  const questionListRef = useRef<Optional<HTMLDivElement>>(null);
+  const nextButtonRef = useRef<Optional<HTMLButtonElement>>(null);
+
   const question = questions[currentQuestionIndex];
-  const answered = !!questions[parseInt(question.id) - 1].answer;
+  const questionTitle = `${question.id}. ${question.question}`;
+  const answered = !!question.answer;
   const answers: Array<Answer> = questions.map(
     ({ id, correctAnswer, answer }) => ({
       questionId: id,
@@ -39,16 +42,29 @@ function App() {
   useEffect(
     function focusNextButtoOnQuestionAnswered() {
       //FIXME: question 30 scroll not working (smth to do with imgs)
-      answered && scrollTo({ ref: nextButtonRef, id: null, duration: 1000 }); //https://www.ackee.agency/blog/scroll-to-element-with-react-and-vanilla-javascript
-      answered && nextButtonRef?.current?.focus();
+      if (answered) {
+        scrollTo({ ref: nextButtonRef, id: null, duration: 1000 }); //https://www.ackee.agency/blog/scroll-to-element-with-react-and-vanilla-javascript
+        nextButtonRef?.current?.focus();
+      }
     },
     [answered]
   );
 
-  const nextQuestionExists = currentQuestionIndex < questions.length - 1;
-  const isFirstQuestion = currentQuestionIndex === 0;
+  const hasNextQuestion = currentQuestionIndex < questions.length - 1;
+  const hasPreviousQuestion = currentQuestionIndex > 0;
+  const displayNextQuestion = () =>
+    setCurrentQuestionIndex((index) => index + 1);
+  const displayPreviousQuestion = () =>
+    setCurrentQuestionIndex((index) => index - 1);
+  const animateQuestionTransition = (changeQuestion: () => void) => {
+    setQuestionVisible(false);
+    setTimeout(() => {
+      changeQuestion();
+      setQuestionVisible(true);
+    }, 400);
+  };
 
-  const updateAnswer = (questionId: string, answer: string | null) => {
+  const updateAnswer = (questionId: string, answer: Optional<string>) => {
     setQuestions(
       questions.map((question) =>
         question.id === questionId ? { ...question, answer } : question
@@ -66,90 +82,54 @@ function App() {
       }}
     >
       <div className="content">
-        <div
-          ref={questionListElementRef}
-          style={{
-            marginTop: questionListVisible
-              ? "2rem"
-              : `-${questionListHeight + 16}px`, //16 (1rem) because of the marginBottom
-            transition: "ease 0.5s",
-            marginBottom: "1rem",
-          }}
-        >
-          <QuestionList
-            answers={answers}
-            showQuestion={setCurrentQuestionIndex}
-            setVisible={setQuestionListVisible}
-          />
-        </div>
-        <Button
-          style={{
-            marginBottom: "48px",
-            ...(questionListVisible && { borderRadius: "0 0 8px 8px" }),
-          }}
-          onClick={() =>
-            setQuestionListVisible(questionListVisible ? false : true)
-          }
-        >
-          {`${questionListVisible ? "Hide" : "Show"} question list`}
-        </Button>
+        <QuestionList
+          ref={questionListRef}
+          answers={answers}
+          chooseQuestion={setCurrentQuestionIndex}
+          visible={questionListVisible}
+          setVisible={setQuestionListVisible}
+        />
         <main
           className="App"
           style={{
-            opacity: questionListVisible || !visible ? "0" : "1",
+            opacity: questionListVisible || !questionVisible ? "0" : "1",
             transition: "ease 0.5s",
           }}
         >
-          <h2>{`${question.id}. ${question.question}`}</h2>
+          <h1>{questionTitle}</h1>
           <div
             style={{
-              marginLeft: "auto",
-              marginRight: "auto",
+              margin: "0 auto 2rem auto",
               width: "60vw",
             }}
           >
             {!!question.code && (
-              <Highlight key={currentQuestionIndex} className="typescript">
-                <div style={{ textAlign: "left" }}>{question.code}</div>
-              </Highlight>
+              <div style={{ textAlign: "left" }}>
+                <Highlight key={currentQuestionIndex} className="typescript">
+                  {question.code}
+                </Highlight>
+              </div>
             )}
           </div>
-          <br />
-          <Options
-            answers={answers}
-            questionAnswered={answered}
-            question={question}
-            updateAnswer={updateAnswer}
-          />
+          <Options question={question} updateAnswer={updateAnswer} />
           {answered && (
             <div className="new-box">
               <Explanation text={question.description} />
-              <br />
-
-              {!isFirstQuestion && (
+              {hasPreviousQuestion && (
                 <Button
                   variant="small"
                   onClick={() => {
-                    setCurrentQuestionIndex(
-                      (currentQuestionIndex) => currentQuestionIndex - 1
-                    );
+                    animateQuestionTransition(displayPreviousQuestion);
                   }}
                 >
                   &#8592; Previous
                 </Button>
               )}
-
-              {nextQuestionExists && (
+              {hasNextQuestion && (
                 <Button
                   ref={nextButtonRef}
                   onClick={() => {
-                    setVisible(false);
-                    setTimeout(() => {
-                      setCurrentQuestionIndex(
-                        (currentQuestionIndex) => currentQuestionIndex + 1
-                      );
-                      setVisible(true);
-                    }, 400);
+                    animateQuestionTransition(displayNextQuestion);
                   }}
                 >
                   Next question &#8594;
@@ -159,21 +139,7 @@ function App() {
           )}
         </main>
       </div>
-      <footer
-        className="read-the-docs"
-        style={{ height: "2.5rem", marginTop: "2rem" }}
-      >
-        Based on Lydia Hallie's{" "}
-        <a
-          target="_blank"
-          href="https://github.com/lydiahallie/javascript-questions"
-        >
-          github repo
-        </a>
-        .
-      </footer>
+      <Footer>Based on Lydia Hallie's {footerLink}.</Footer>
     </div>
   );
 }
-
-export default App;
