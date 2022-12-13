@@ -41,7 +41,7 @@ export const QuestionList = forwardRef(function QuestionList(
         aria-hidden={isVisible}
         style={{
           marginTop: isVisible ? "2rem" : `-${questionListHeight + 16}px`, //16 (1rem) because of the marginBottom
-          transform: `scale(${isVisible ? "1" : "0.95"})`,
+          // transform: `scale(${isVisible ? "1" : "0.95"})`,
           transition: "ease 0.5s", //TODO update with the keyframes animation
           marginBottom: "1rem",
         }}

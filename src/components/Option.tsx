@@ -1,4 +1,4 @@
-import { Answer, Optional, OptionVariant, Question } from "../types";
+import { Optional, OptionVariant, Question } from "../types";
 import { TextWithCodeHighlight } from "./TextWithCodeHighlight";
 
 type Props = {
