@@ -8,13 +8,13 @@ export type Question = {
     id: string;
     option: string;
   }>;
-  description: string;
+  explanation: string;
   correctAnswer: string;
   answer: Optional<string>;
 };
 
 export type Answer = {
-  questionId: string;
+  questionNumber: string;
   correctAnswer: string;
   answer: Optional<string>;
 };
@@ -24,4 +24,4 @@ export type Option = {
   option: string;
 };
 
-export type OptionVariant = "Correct" | "Incorrect" | "NotAnswered";
+export type OptionVariant = "correct" | "incorrect" | "notAnswered";

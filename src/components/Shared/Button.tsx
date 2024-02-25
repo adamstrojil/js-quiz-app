@@ -1,4 +1,4 @@
-import { forwardRef, HTMLProps, ReactNode } from "react";
+import { forwardRef, HTMLProps, ReactNode, Ref } from "react";
 
 type PublicProps = {
   children: ReactNode;
@@ -16,7 +16,7 @@ const variantToStyleMap = {
 
 export const Button = forwardRef(function Button(
   { onClick, children, variant = "normal", type = "button", ...rest }: Props,
-  ref: any
+  ref: Ref<HTMLButtonElement>
 ) {
   return (
     <button

@@ -173,8 +173,8 @@ function MyComponent() {
 ```
 
 - [ ] lazy
-- [ ] loading
-- [x] fallback
+- [x] loading
+- [ ] fallback
 - [ ] spinner
 
 [Reference](https://linguinecode.com/post/how-react-suspense-works)
@@ -467,8 +467,8 @@ function MyComponent(props) {
 ```
 
 - [ ] `useEffect(() => { setDone(true); });`
-- [x] `useEffect(() => { setDone(true); }, []);`
-- [ ] `useEffect(() => { setDone(true); }, [setDone]);`
+- [ ] `useEffect(() => { setDone(true); }, []);`
+- [x] `useEffect(() => { setDone(true); }, [setDone]);`
 - [ ] `useEffect(() => { setDone(true); }, [done, setDone]);`
 
 #### Q45. Currently, `handleClick` is being called instead of passed as a reference. How do you fix this?
@@ -530,10 +530,10 @@ class Button extends React.Component{
 }
 ```
 
-- [ ] `this.handleClick.bind(this);`
+- [x] `this.handleClick.bind(this);`
 - [ ] `props.bind(handleClick);`
 - [ ] `this.handleClick.bind();`
-- [x] `this.handleClick = this.handleClick.bind(this);`
+- [ ] `this.handleClick = this.handleClick.bind(this);`
 
 #### Q51. React does not render two sibling elements unless they are wrapped in a fragment. Below is one way to render a fragment. What is the shorthand for this?
 
@@ -636,8 +636,8 @@ const element = <h1 style={ backgroundColor: "blue" }>Hi</h1>;
 
 - [ ] `replaceState`
 - [ ] `refreshState`
-- [ ] `updateState`
-- [x] `setState`
+- [x] `updateState`
+- [ ] `setState`
 
 #### Q57. Consider the following component. What is the default color for the star?
 
@@ -755,10 +755,10 @@ ReactDOM.render(
 
 #### Q62. Why should you use React Router's Link component instead of a basic `<a>` tag in React?
 
-- [ ] The link component allows the user to use the browser's `Back` button.
+- [x] The link component allows the user to use the browser's `Back` button.
 - [ ] There is no difference--the `Link` component is just another name for the `<a>` tag.
 - [ ] The `<a>` tag will cause an error when used in React.
-- [x] The `<a>` tag triggers a full page reload, while the `Link` component does not.
+- [ ] The `<a>` tag triggers a full page reload, while the `Link` component does not.
 
 #### Q63. What is the first argument, `x`, that is sent to the `createElement` function?
 
@@ -926,8 +926,8 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(element);
 ```
 
-- [x] `createRoot(document.getElementById("root"));`
-- [ ] `ReactDOM(element, document.getElementById("root"));`
+- [ ] `createRoot(document.getElementById("root"));`
+- [x] `ReactDOM(element, document.getElementById("root"));`
 - [ ] `renderDOM(element, document.getElementById("root"));`
 - [ ] `DOM(element, document.getElementById("root"));`
 
@@ -979,17 +979,17 @@ class StarTrekkin extends React.Component {
 ```
 
 - [ ] `<button onClick={firePhotonTorpedoes()}>Pew Pew</button>`
-- [ ] `<button onClick={firePhotonTorpedoes}>Pew Pew</button>`
+- [x] `<button onClick={firePhotonTorpedoes}>Pew Pew</button>`
 - [ ] `<button onClick={this.firePhotonTorpedoes()}>Pew Pew</button>`
-- [x] `<button onClick={this.firePhotonTorpedoes}>Pew Pew</button>`
+- [ ] `<button onClick={this.firePhotonTorpedoes}>Pew Pew</button>`
 
 [Source: React Docs](https://reactjs.org/docs/handling-events.html)
 
 #### Q80. What is the process of deciding whether an update is necessary?
 
 - [ ] shadow DOM
-- [ ] fiber
-- [x] reconciliation
+- [x] fiber
+- [ ] reconciliation
 - [ ] setting state
 
 #### Q81. React is an open-source project but is maintained by which company?
@@ -1062,10 +1062,10 @@ class Huggable extends React.Component {
 }
 ```
 
-- [ ] `<button onClick={(name) => this.hug(name)}>Hug Button</button>;`
+- [x] `<button onClick={(name) => this.hug(name)}>Hug Button</button>;`
 - [ ] `<button onClick={this.hug(e, name)}>Hug Button</button>;`
 - [ ] `<button onClick={(e) => hug(name, e)}>Hug Button</button>;`
-- [x] `<button onClick={(e) => this.hug(name, e)}>Hug Button</button>;`
+- [ ] `<button onClick={(e) => this.hug(name, e)}>Hug Button</button>;`
 
 **Explanation:**
 This question test knowledge of react class components. You need to use `this` in order to call methods declared inside class components.
@@ -1109,8 +1109,8 @@ function Dish() {
 
 #### Q92. When does the componentDidMount function fire?
 
-- [x] right after the component is added to the DOM
-- [ ] before the component is added to the DOM
+- [ ] right after the component is added to the DOM
+- [x] before the component is added to the DOM
 - [ ] right after the component is updated
 - [ ] right after an API call
 
@@ -1125,8 +1125,8 @@ function Dish() {
 
 #### Q94. When using the React Developer Tools Chrome extension, what does it mean if the React icon is red?
 
-- [x] You are using the development build of React.
-- [ ] You are using the production build of React.
+- [ ] You are using the development build of React.
+- [x] You are using the production build of React.
 - [ ] You are using webpack.
 - [ ] You are using Create React App.
 
@@ -1352,8 +1352,8 @@ Explanation: Apparently the question misstyped `greet` as `hug`. Putting this as
 
 - [ ] ReactDOM.createPortal()
 - [ ] ReactDOM.hydrate()
-- [x] ReactDOM.destroy()
-- [ ] ReactDOM.findDOMnode()
+- [ ] ReactDOM.destroy()
+- [x] ReactDOM.findDOMnode()
 
 #### Q113. In react, the key should be?
 
@@ -1457,7 +1457,7 @@ const Waitlist = () => {
 {(isLoggedIn)=><b>{isLoggedIn ? "Online" : "Offline"}</b>}
 </Context.Consumer>
 
-- [ ] higher-order component
+- [x] higher-order component
 - [ ] wish component
-- [x] Render Props
+- [ ] Render Props
 - [ ] setup Componet

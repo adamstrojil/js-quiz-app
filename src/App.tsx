@@ -1,68 +1,88 @@
 import { useEffect, useRef, useState } from "react";
-import Highlight from "react-highlight";
 
 import questionsJSON from "../public/questions.json";
 import { scrollTo } from "./utils";
 
 import "./App.css";
-import { QuestionList } from "./components/QuestionList";
-import { Options } from "./components/Options";
+import { Questions } from "./components/Questions";
+import { Options } from "./components/Options/Options";
 import { Answer, Optional, Question } from "./types";
-import { Button } from "./components/Button";
-import { Explanation } from "./components/Explanation";
+import { Button } from "./components/Shared/Button";
+import { Explanation } from "./components/Explanation/Explanation";
 import { Footer } from "./components/Footer";
+import { CodeArea } from "./components/CodeArea";
+import { Title } from "./components/Shared";
+import { PageLayout } from "./PageLayout";
+import { QuestionPage } from "./QuestionPage";
+import { getQuestionTitle } from "./components/Questions/utils";
 
-const footerLink = (
-  <a target="_blank" href="https://github.com/lydiahallie/javascript-questions">
-    github repo
-  </a>
-);
+const LOCAL_STORAGE_KEY = "questions";
 
 export function App() {
+  useEffect(function loadQuestionsFromLocalStorage() {
+    const savedData = localStorage.getItem(LOCAL_STORAGE_KEY);
+    if (savedData) {
+      setQuestions(JSON.parse(savedData));
+    }
+  }, []);
+
+  const saveQuestionsToLocalStorage = (questions: Array<Question>) => {
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(questions));
+  };
+
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [questionListVisible, setQuestionListVisible] = useState(false);
   const [questionVisible, setQuestionVisible] = useState(true);
   const [questions, setQuestions] = useState<Array<Question>>(
     questionsJSON.map((question) => ({ ...question, answer: null }))
   );
-  const questionListRef = useRef<Optional<HTMLDivElement>>(null);
   const nextButtonRef = useRef<Optional<HTMLButtonElement>>(null);
   const questionTitleRef = useRef<Optional<HTMLHeadingElement>>(null);
 
-  const question = questions[currentQuestionIndex];
-  const questionTitle = `${question.id}. ${question.question}`;
-  const answered = !!question.answer;
   const answers: Array<Answer> = questions.map(
     ({ id, correctAnswer, answer }) => ({
-      questionId: id,
+      questionNumber: id,
       correctAnswer,
       answer,
     })
   );
+  const currentQuestion = questions[currentQuestionIndex];
+  const questionTitle = getQuestionTitle(currentQuestion);
+  const { code, explanation, answer } = currentQuestion;
+  const isQuestionAnswered = !!answer;
 
   useEffect(
-    function focusNextButtoOnQuestionAnswered() {
-      if (answered) {
+    function focusNextButtonAfterAnswer() {
+      if (isQuestionAnswered) {
         scrollTo({ ref: nextButtonRef, id: null, duration: 1000 }); //https://www.ackee.agency/blog/scroll-to-element-with-react-and-vanilla-javascript
         nextButtonRef?.current?.focus();
       }
     },
-    [answered]
+    [isQuestionAnswered]
   );
 
-  useEffect(
-    function focusTitleOnQuestionChange() {
-      questionTitleRef?.current?.focus();
-    },
-    [currentQuestionIndex]
-  );
+  const resetAnswers = () => {
+    if (confirm("Are you sure you want to delete ALL recorder answers?")) {
+      localStorage.clear();
+      setQuestions((questions) =>
+        questions.map((question) => ({ ...question, answer: null }))
+      );
+      setCurrentQuestionIndex(0)
+    }
+  };
 
   const hasNextQuestion = currentQuestionIndex < questions.length - 1;
   const hasPreviousQuestion = currentQuestionIndex > 0;
-  const displayNextQuestion = () =>
+
+  const displayNextQuestion = () => {
     setCurrentQuestionIndex((index) => index + 1);
-  const displayPreviousQuestion = () =>
+    questionTitleRef.current?.focus();
+  };
+  const displayPreviousQuestion = () => {
     setCurrentQuestionIndex((index) => index - 1);
+    questionTitleRef.current?.focus();
+  };
+
   const animateQuestionTransition = (changeQuestion: () => void) => {
     setQuestionVisible(false);
     setTimeout(() => {
@@ -71,86 +91,65 @@ export function App() {
     }, 400);
   };
 
-  const updateAnswer = (questionId: string, answer: Optional<string>) => {
-    setQuestions(
-      questions.map((question) =>
-        question.id === questionId ? { ...question, answer } : question
-      )
+  const recordAnswer = (questionId: string, answer: Optional<string>) => {
+    const updatedQuestions = questions.map((question) =>
+      question.id === questionId ? { ...question, answer } : question
     );
+    saveQuestionsToLocalStorage(updatedQuestions);
+    setQuestions(updatedQuestions);
   };
 
-  return (
-    <div
-      className="wrapper"
-      style={{
-        minHeight: "100vh",
-        display: "grid",
-        gridTemplateRows: "1fr auto",
+  const previousQuestionButton = (
+    <Button
+      variant="small"
+      onClick={() => {
+        animateQuestionTransition(displayPreviousQuestion);
       }}
     >
-      <div className="content">
-        <QuestionList
-          currentQuestionIndex={currentQuestionIndex}
-          ref={questionListRef}
+      &#8592; Previous
+    </Button>
+  );
+
+  const nextQuestionButton = (
+    <Button
+      ref={nextButtonRef}
+      onClick={() => {
+        animateQuestionTransition(displayNextQuestion);
+      }}
+    >
+      Next question &#8594;
+    </Button>
+  );
+
+  return (
+    <PageLayout
+      navigation={
+        <Questions
           answers={answers}
-          chooseQuestion={setCurrentQuestionIndex}
           isVisible={questionListVisible}
           setVisible={setQuestionListVisible}
+          currentQuestionIndex={currentQuestionIndex}
+          onQuestionSelect={setCurrentQuestionIndex}
+          onResetAnswers={resetAnswers}
         />
-        <main
-          className="App"
-          style={{
-            opacity: questionListVisible || !questionVisible ? "0" : "1",
-            visibility: questionListVisible ? "hidden" : "visible",
-            transition: "ease 0.5s",
-          }}
-        >
-          <h1 tabIndex={-1} ref={questionTitleRef}>
-            {questionTitle}
-          </h1>
-          <div
-            style={{
-              margin: "0 auto 2rem auto",
-              width: "60vw",
-            }}
-          >
-            {!!question.code && (
-              <div style={{ textAlign: "left" }}>
-                <Highlight key={currentQuestionIndex} className="typescript">
-                  {question.code}
-                </Highlight>
-              </div>
-            )}
+      }
+      footer={<Footer />}
+    >
+      <QuestionPage
+        isQuestionVisible={questionVisible}
+        isQuestionListVisible={questionListVisible}
+      >
+        <Title ref={questionTitleRef} text={questionTitle} />
+        <CodeArea code={code} />
+        <Options question={currentQuestion} onAnswerSelect={recordAnswer} />
+        {isQuestionAnswered && (
+          <div className="answerRevealArea">
+            <Explanation text={explanation} />
+            {hasPreviousQuestion && previousQuestionButton}
+            {hasNextQuestion && nextQuestionButton}
           </div>
-          <Options question={question} updateAnswer={updateAnswer} />
-          {answered && (
-            <div className="new-box">
-              <Explanation text={question.description} />
-              {hasPreviousQuestion && (
-                <Button
-                  variant="small"
-                  onClick={() => {
-                    animateQuestionTransition(displayPreviousQuestion);
-                  }}
-                >
-                  &#8592; Previous
-                </Button>
-              )}
-              {hasNextQuestion && (
-                <Button
-                  ref={nextButtonRef}
-                  onClick={() => {
-                    animateQuestionTransition(displayNextQuestion);
-                  }}
-                >
-                  Next question &#8594;
-                </Button>
-              )}
-            </div>
-          )}
-        </main>
-      </div>
-      <Footer>Based on Lydia Hallie's {footerLink}.</Footer>
-    </div>
+        )}
+      </QuestionPage>
+    </PageLayout>
   );
 }
